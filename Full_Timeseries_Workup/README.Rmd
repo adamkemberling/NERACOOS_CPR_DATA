@@ -53,8 +53,9 @@ library(worrms)    # Interface with WORMS and Aphia ID's
 # Paths to targets instead of ERDDAP:
 
 #---- NOAA Sourced Years ----#
-withr::with_dir(rprojroot::find_root('_targets.R'),         
-                tar_load("noaa_zp_erddap"))
+withr::with_dir(
+  rprojroot::find_root('_targets.R'),         
+  tar_load("noaa_zp_erddap"))
 
 
 # Reformat data types for later
@@ -65,10 +66,12 @@ noaa_zp <- noaa_zp_erddap %>%
 
 
 #---- MBA Sourced Years ----#
-withr::with_dir(rprojroot::find_root('_targets.R'), 
-                tar_load("mba_zpe_erddap"))
-withr::with_dir(rprojroot::find_root('_targets.R'), 
-                tar_load("mba_zpt_erddap"))
+withr::with_dir(
+  rprojroot::find_root('_targets.R'), 
+  tar_load("mba_zpe_erddap"))
+withr::with_dir(
+  rprojroot::find_root('_targets.R'), 
+  tar_load("mba_zpt_erddap"))
 
 # Shorten the MBA names
 mba_zpt <- mba_zpt_erddap
@@ -86,8 +89,9 @@ rm(noaa_zp_erddap, mba_zpt_erddap, mba_zpe_erddap)
 
 # 1. NOAA Zooplankton
 # Get the tabledap information from the server link and dataset_id
-cpr_info <- info(url = "http://ismn.erddap.neracoos.org/erddap", 
-                 datasetid = "noaa_gom_cpr_zooplankton")
+cpr_info <- info(
+  url = "http://ismn.erddap.neracoos.org/erddap", 
+  datasetid = "noaa_gom_cpr_zooplankton")
 
 # Use the tabledap function to import all the data (optionally add filters)
 noaa_zp <- tabledap(cpr_info)
@@ -100,13 +104,15 @@ noaa_zp <- noaa_zp %>%
 
 
 # 2. MBA Traverse
-cpr_info <- info(url = "http://ismn.erddap.neracoos.org/erddap", 
-                 datasetid = "mba_gom_cpr_traverse")
+cpr_info <- info(
+  url = "http://ismn.erddap.neracoos.org/erddap", 
+  datasetid = "mba_gom_cpr_traverse")
 mba_zpt <- tabledap(cpr_info)
 
 # 2. MBA Eyecount
-cpr_info <- info(url = "http://ismn.erddap.neracoos.org/erddap", 
-                 datasetid = "mba_gom_cpr_eyecount")
+cpr_info <- info(
+  url = "http://ismn.erddap.neracoos.org/erddap", 
+  datasetid = "mba_gom_cpr_eyecount")
 mba_zpe <- tabledap(cpr_info)
 
 ```
@@ -128,12 +134,14 @@ In general there is very little overlap where a taxon would be "double-counted",
 # The original code was in its wide-format, and with that format the metadata was in the first ten columns
 
 # What we can do instead with the long format is rename abundance and abundance_per_transect of the one of them, merge, then add them to get totals
-mba_eye <- rename(mba_zpe,
-                  abund_eyecount = abundance, 
-                  transect_abund_eyecount = abundance_per_transect)
-mba_trav <- rename(mba_zpt, 
-                   abund_traverse = abundance, 
-                   transect_abund_traverse = abundance_per_transect)
+mba_eye <- rename(
+  .data = mba_zpe,
+  abund_eyecount = abundance, 
+  transect_abund_eyecount = abundance_per_transect)
+mba_trav <- rename(
+  .data = mba_zpt, 
+  abund_traverse = abundance, 
+  transect_abund_traverse = abundance_per_transect)
  
 # Once the abundance columns are no longer in conflict we can merge them on taxa_id numbers etc.
 mba_zp <- full_join(

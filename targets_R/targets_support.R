@@ -363,15 +363,16 @@ pivot_phyto <- function(phyto_abund, phyto_key){
   
   # Join the marmap codes in & prep/format the data
   phyto_erd <- phyto_long %>% 
-    mutate(date = as.POSIXct(str_c(year, "-", month, "-", day, " ", hour, ":", minute, ":", "00")),
-           `taxon name` = str_to_sentence(`taxon name`)) %>% 
+    mutate(
+      time = as.Date(str_c(year, "-", month, "-", day)) + hours(hour) + minutes(minute),
+      `taxon name` = str_to_sentence(`taxon name`)) %>% 
     left_join(phyto_key, by = "taxon name") 
   
   # clean up columns
   phyto_erd_clean <- phyto_erd %>% 
     select(cruise, 
            transect_number = station, 
-           time = date, 
+           time,
            latitude = `latitude (degrees)`, 
            longitude = `longitude (degrees)`, 
            pci = `phytoplankton color index`,
@@ -407,10 +408,11 @@ pivot_phyto <- function(phyto_abund, phyto_key){
 pivot_zooplankton <- function(zoo_abund, zoo_key){
   
   # Pivot longer
-  zoo_long <- pivot_longer(zoo_abund, 
-                           names_to = "taxon name", 
-                           values_to = "abundance", 
-                           cols = 11:ncol(zoo_abund))
+  zoo_long <- pivot_longer(
+    zoo_abund, 
+    names_to = "taxon name", 
+    values_to = "abundance", 
+    cols = 11:ncol(zoo_abund))
   
   # Split taxon name and stage
   zoo_split <- zoo_long %>% 
@@ -435,11 +437,13 @@ pivot_zooplankton <- function(zoo_abund, zoo_key){
   # reformat columns
   zoo_erd_clean <- zoo_erd %>% 
     mutate(
-      date = as.POSIXct(str_c(year, "-", month, "-", day, " ", hour, ":", minute, ":", "00")),
+      # date = as.POSIXct(str_c(year, "-", month, "-", day, " ", hour, ":", minute, ":", "00")),
+      time = as.Date(str_c(year, "-", month, "-", day)) + hours(hour) + minutes(minute),
       stage = str_trim(stage)) %>% 
     select(cruise, 
            transect_number = station, 
-           time = date, 
+           # time = date, 
+           time, 
            latitude = `latitude (degrees)`, 
            longitude = `longitude (degrees)`, 
            pci = `phytoplankton color index`,

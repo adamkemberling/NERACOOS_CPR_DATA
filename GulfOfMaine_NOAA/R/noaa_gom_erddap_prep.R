@@ -135,9 +135,9 @@ erddap_phytoplankton %>% filter(is.na(marmap_code)) %>% distinct(taxon)
 
 
 # Targets replacements
-tar_load(zoo_abundances)
-tar_load(zoo_key)
-tar_load(erddap_zooplankton)
+tar_load(zp_abund)
+tar_load(zp_key)
+tar_load(noaa_zp_erddap)
 
 
 
